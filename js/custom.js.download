@@ -1,0 +1,158 @@
+$(document).ready(function(){
+// init controller     
+var controller = new ScrollMagic.Controller();
+
+// hamburger menu
+$('#hamburger-button').click(function(){
+	$('.hamburger-menu').toggleClass('open');
+	$('.hamburger').toggleClass('open');
+  $('.header-search').toggleClass('showSearch');
+  if(document.getElementById('stickyHeader')){
+    $('.subSection-height').toggleClass('hideElement');
+  }
+  if(document.getElementById('contentSticky')){
+    $('.subSection-header').removeClass('hidesubMenu');
+  }
+});
+
+// smooth scroll to 
+// $(document).on('click', 'a[href*="#"]', function (event) {
+//   if ((window.location.href.indexOf($(this).attr('href'))) > -1) {
+//     event.preventDefault();
+//     var id = '#'+$(this).attr('href').split('#')[1];
+//     $('html, body').animate({
+//         scrollTop: $(id).offset().top - 5
+//     }, 500);  
+//   }
+// });
+
+// Animation trigger
+$('.animationTrigger').each(function(index){
+  var number = $(this).attr('data-int');
+  var animPath = window['animFile'+number];
+  var animCont = window['animCont'+number];
+
+  if(animPath != undefined){
+
+    var animation = bodymovin.loadAnimation({
+      container: animCont,
+      path: animPath,
+      renderer: 'svg', 
+      loop: false, 
+      autoplay: false, 
+    });
+
+    new ScrollMagic.Scene({
+      offset: 0,   
+      triggerElement: this,
+      triggerHook: 0.8
+    })
+      .on("start", function (event) {animation.play();})
+      //.addIndicators() // for debugging
+      .addTo(controller) ;
+  }
+
+});  
+
+// main menu sticky
+var header = $('.header-container-wrapper');
+new ScrollMagic.Scene({
+  offset: 40,    // make main menu sticky after scrolling for 50px
+  triggerElement: header,
+  triggerHook: 0,
+  reverse: true
+})
+  .on("start", function (event) {
+  header.toggleClass("sticky-header");
+})
+//   .addIndicators()
+  .addTo(controller) ;
+
+
+// Search Animation
+
+$('.header-search').click(function(){
+  $(this).addClass('search-anim');
+});
+
+$(document).mouseup(function(e){
+    var container = $(".header-search");
+
+    // if the target of the click isn't the container nor a descendant of the container
+    if (!container.is(e.target) && container.has(e.target).length === 0){
+        $('.header-search').removeClass('search-anim');
+    }
+  
+    var menucontainer = $(".header-container-wrapper");
+    //console.log("Clicked");
+    if (!menucontainer.is(e.target) && menucontainer.has(e.target).length === 0){
+      //console.log("Clicked");
+      $('.header-container').removeClass('flyout-active');
+      $('.flyout-menu').removeClass('active');
+      $('.close-menu').css('transform','scale(0)');
+      if(document.getElementById('contentSticky')){
+        $('.subSection-header').removeClass('hidesubMenu');
+      } 
+    }
+});
+
+
+// Sticky Header in inside pages
+
+if(document.getElementById('stickyHeader')){
+  // services page sticky menu 
+  var lastScrollTop = 0;
+  $(window).scroll(function(){
+    var top = $('#stickyHeader').offset().top;
+    var scrollpos = $(window).scrollTop();
+    var subHeader = $('#stickyHeader .subSection-header'); 
+    if(top <= scrollpos){
+      subHeader.addClass('sticky');
+      var st = $(this).scrollTop();
+      if (st > lastScrollTop){
+        // downscroll code
+        subHeader.removeClass('scrollup');
+      } else {
+        // upscroll code
+        subHeader.addClass('scrollup');
+      }
+      lastScrollTop = st;
+    } else{
+      if(top >= scrollpos + 54){
+        $('#stickyHeader .subSection-header').removeClass('sticky scrollup');  
+      }
+    }
+  });
+}
+
+// code for notification element
+var popupHeight ;
+var timer = setInterval(function() { 
+  if( $('.leadinModal').length != 0 ){
+   clearInterval(timer);
+    popupHeight = $('.leadinModal').outerHeight();
+    //console.log('post-interval');
+    $('body').addClass('notification-on');
+    $('.notification-on .header-container-wrapper').css('top', popupHeight+'px');
+     console.log(popupHeight);
+  }
+}, 1000);
+  
+$('body').on('click', function(event) {
+    if($(event.target).hasClass('leadinModal-close')){
+      $('body').removeClass('notification-on');
+      $('.header-container-wrapper').css('top', '0px');
+    }
+});
+ 
+});
+
+
+
+
+
+
+
+
+
+

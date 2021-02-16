@@ -1,0 +1,9 @@
+#demo {
+    max-width: 1052px;
+    display: block;
+    position: relative;
+    margin: 0 auto !important;
+    float: none !important;
+    padding-left: 10px;
+    padding-right: 10px;
+}
